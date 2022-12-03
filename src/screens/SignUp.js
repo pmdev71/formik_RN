@@ -7,42 +7,69 @@ import {
   StatusBar,
   TextInput,
   Button,
+  TouchableOpacity,
 } from 'react-native';
 import {Formik, Field} from 'formik';
 import * as yup from 'yup';
 import CustomInput from '../components/common/components/CustomInput';
 
+//API client
+import axios from 'axios';
+
 const signUpValidationSchema = yup.object().shape({
-  fullName: yup
+  name: yup
     .string()
     .matches(/(\w.+\s).+/, 'Enter at least 2 names')
     .required('Full name is required'),
-  phoneNumber: yup
-    .string()
-    .matches(/(01)(\d){8}\b/, 'Enter a valid phone number')
-    .required('Phone number is required'),
+  // phoneNumber: yup
+  //   .string()
+  //   .matches(/(01)(\d){8}\b/, 'Enter a valid phone number')
+  //   .required('Phone number is required'),
   email: yup
     .string()
     .email('Please enter valid email')
     .required('Email is required'),
   password: yup
     .string()
-    .matches(/\w*[a-z]\w*/, 'Password must have a small letter')
-    .matches(/\w*[A-Z]\w*/, 'Password must have a capital letter')
-    .matches(/\d/, 'Password must have a number')
-    .matches(
-      /[!@#$%^&*()\-_"=+{}; :,<.>]/,
-      'Password must have a special character',
-    )
-    .min(8, ({min}) => `Password must be at least ${min} characters`)
+    // .matches(/\w*[a-z]\w*/, 'Password must have a small letter')
+    // .matches(/\w*[A-Z]\w*/, 'Password must have a capital letter')
+    // .matches(/\d/, 'Password must have a number')
+    // .matches(
+    //   /[!@#$%^&*()\-_"=+{}; :,<.>]/,
+    //   'Password must have a special character',
+    // )
+    .min(6, ({min}) => `Password must be at least ${min} characters`)
     .required('Password is required'),
-  confirmPassword: yup
-    .string()
-    .oneOf([yup.ref('password')], 'Passwords do not match')
-    .required('Confirm password is required'),
+  // confirmPassword: yup
+  //   .string()
+  //   .oneOf([yup.ref('password')], 'Passwords do not match')
+  //   .required('Confirm password is required'),
 });
 
-const SignUp = () => {
+const SignUp = ({navigation}) => {
+  const handleSignUp = credentials => {
+    const url = 'https://vercel-new-mocha.vercel.app/user/signup';
+
+    axios
+      .post(url, credentials)
+      .then(response => {
+        const result = response.data;
+        const {msg, status, data} = result;
+        console.log('Result signup--->', result);
+        if (status === 'Success') {
+          navigation.navigate('Welcome', {user: data});
+        } else if (status === 'Pending') {
+          console.log('Email Verification--->', msg);
+          navigation.navigate('EmailVerification');
+        } else {
+          console.log('Error--->', msg);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
   return (
     <>
       <StatusBar barStyle="dark-content" />
@@ -52,18 +79,21 @@ const SignUp = () => {
           <Formik
             validationSchema={signUpValidationSchema}
             initialValues={{
-              fullName: '',
+              name: '',
               email: '',
-              phoneNumber: '',
+              // phoneNumber: '',
               password: '',
-              confirmPassword: '',
+              // confirmPassword: '',
             }}
-            onSubmit={values => console.log(values)}>
+            onSubmit={values => {
+              handleSignUp(values);
+              // console.log(values)
+            }}>
             {({handleSubmit, isValid}) => (
               <>
                 <Field
                   component={CustomInput}
-                  name="fullName"
+                  name="name"
                   placeholder="Full Name"
                 />
                 <Field
@@ -72,30 +102,33 @@ const SignUp = () => {
                   placeholder="Email Address"
                   keyboardType="email-address"
                 />
-                <Field
+                {/* <Field
                   component={CustomInput}
                   name="phoneNumber"
                   placeholder="Phone Number"
                   keyboardType="numeric"
-                />
+                /> */}
                 <Field
                   component={CustomInput}
                   name="password"
                   placeholder="Password"
                   secureTextEntry
                 />
-                <Field
+                {/* <Field
                   component={CustomInput}
                   name="confirmPassword"
                   placeholder="Confirm Password"
                   secureTextEntry
-                />
+                /> */}
 
                 <Button
                   onPress={handleSubmit}
                   title="SIGN UP"
                   disabled={!isValid}
                 />
+                <TouchableOpacity onPress={() => navigation.navigate('LogIn')}>
+                  <Text>Already have an account? Sign In</Text>
+                </TouchableOpacity>
               </>
             )}
           </Formik>
