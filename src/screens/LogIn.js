@@ -5,10 +5,8 @@ import {
   View,
   Text,
   StatusBar,
-  TextInput,
   Button,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import {Formik, Field} from 'formik';
 import * as yup from 'yup';
@@ -74,11 +72,13 @@ const LogIn = ({navigation}) => {
 
   //store logged in user data in async storage
   const storeDataAsyncStorage = async data => {
-    // const dispatch = useDispatch();
     try {
       const dataInjsonValue = JSON.stringify(data);
+
+      // console.log('data  value--->', data);
+      // console.log('dataInjsonValue value--->', dataInjsonValue);
       //add user data to redux store
-      dispatch(setUser(dataInjsonValue));
+      dispatch(setUser(data));
 
       //add user data to async storage
       await AsyncStorage.setItem('pmAsyncStoreData', dataInjsonValue);

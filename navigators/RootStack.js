@@ -13,12 +13,14 @@ import SignUp from '../src/screens/SignUp';
 import Welcome from '../src/screens/Welcome';
 import EmailVerification from '../src/screens/EmailVerification';
 
-import {Provider} from 'react-redux';
-import store from '../src/reduxtoolkit/UserStore';
+//redux toolkit
+import {useDispatch} from 'react-redux';
+import {setUser} from '../src/reduxtoolkit/UserSlice';
 
 const Stack = createStackNavigator();
 
 const RootStack = () => {
+  const dispatch = useDispatch();
   const [isSignedIn, setIsSignedIn] = useState(false);
 
   useEffect(() => {
@@ -26,6 +28,7 @@ const RootStack = () => {
       try {
         const value = await AsyncStorage.getItem('pmAsyncStoreData');
         console.log('AsyncStorage Value--->', value);
+        dispatch(setUser(JSON.parse(value)));
         if (value !== null) {
           console.log('AsyncStorage Value--->', value);
           setIsSignedIn(true);
@@ -38,49 +41,48 @@ const RootStack = () => {
   }, []);
 
   return (
-    <Provider store={store}>
-      <NavigationContainer>
-        <Stack.Navigator
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: 'transparent',
-            },
-            headerTintColor: 'transparent',
-            headerTransparent: true,
-            headerTitle: '',
-            headerLeftContainerStyle: {
-              paddingLeft: 5,
-            },
-          }}
-          // initialRouteName="LogIn"
-        >
-          {isSignedIn ? (
-            <>
-              <Stack.Screen
-                options={{headerTintColor: 'green'}}
-                name="Welcome"
-                component={Welcome}
-              />
-              <Stack.Screen
-                options={{headerTintColor: 'green'}}
-                name="EmailVerification"
-                component={EmailVerification}
-              />
-            </>
-          ) : (
-            <>
-              <Stack.Screen name="LogIn" component={LogIn} />
-              <Stack.Screen name="SignUp" component={SignUp} />
-              <Stack.Screen
-                options={{headerTintColor: 'green'}}
-                name="Welcome"
-                component={Welcome}
-              />
-            </>
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </Provider>
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: 'transparent',
+          },
+          headerTintColor: 'transparent',
+          headerTransparent: true,
+          headerTitle: '',
+          headerLeftContainerStyle: {
+            paddingLeft: 5,
+          },
+        }}
+        initialRouteName={isSignedIn ? 'Welcome' : 'LogIn'}>
+        {console.log('isSignedIn--->', isSignedIn)}
+        {isSignedIn ? (
+          <>
+            <Stack.Screen
+              options={{headerTintColor: 'green'}}
+              name="Welcome"
+              component={Welcome}
+            />
+            {/* <Stack.Screen name="LogIn" component={LogIn} /> */}
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="LogIn" component={LogIn} />
+            <Stack.Screen name="SignUp" component={SignUp} />
+            <Stack.Screen
+              options={{headerTintColor: 'green'}}
+              name="Welcome"
+              component={Welcome}
+            />
+            <Stack.Screen
+              options={{headerTintColor: 'green'}}
+              name="EmailVerification"
+              component={EmailVerification}
+            />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 

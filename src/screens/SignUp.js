@@ -5,7 +5,6 @@ import {
   View,
   Text,
   StatusBar,
-  TextInput,
   Button,
   TouchableOpacity,
 } from 'react-native';
@@ -15,6 +14,8 @@ import CustomInput from '../components/common/components/CustomInput';
 
 //API client
 import axios from 'axios';
+import {useDispatch, useSelector} from 'react-redux';
+import {setUser} from '../reduxtoolkit/UserSlice';
 
 const signUpValidationSchema = yup.object().shape({
   name: yup
@@ -47,6 +48,8 @@ const signUpValidationSchema = yup.object().shape({
 });
 
 const SignUp = ({navigation}) => {
+  const dispatch = useDispatch();
+
   const handleSignUp = credentials => {
     const url = 'https://vercel-new-mocha.vercel.app/user/signup';
 
@@ -57,6 +60,7 @@ const SignUp = ({navigation}) => {
         const {msg, status, data} = result;
         console.log('Result signup--->', result);
         if (status === 'Success') {
+          storeDataAsyncStorage(data);
           navigation.navigate('Welcome', {user: data});
         } else if (status === 'Pending') {
           console.log('Email Verification--->', msg);
@@ -68,6 +72,19 @@ const SignUp = ({navigation}) => {
       .catch(error => {
         console.log(error);
       });
+  };
+
+  //store logged in user data in async storage
+  const storeDataAsyncStorage = async data => {
+    try {
+      const dataInjsonValue = JSON.stringify(data);
+      //add user data to redux store
+      dispatch(setUser(data));
+      //add user data to async storage
+      await AsyncStorage.setItem('pmAsyncStoreData', dataInjsonValue);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
