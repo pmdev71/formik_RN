@@ -14,6 +14,7 @@ import CustomInput from '../components/common/components/CustomInput';
 //redux toolkit
 import {useSelector, useDispatch} from 'react-redux';
 import {setUser, removeUser} from '../reduxtoolkit/UserSlice';
+import YoutubeApi from './YoutubeApi';
 
 const blogValidationSchema = yup.object().shape({
   title: yup.string().required('Title is required'),
@@ -74,6 +75,7 @@ const Welcome = ({navigation, route}) => {
             )}
           </Formik> */}
         </View>
+        <YoutubeApi />
       </SafeAreaView>
     </>
   );

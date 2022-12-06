@@ -51,7 +51,7 @@ const SignUp = ({navigation}) => {
   const dispatch = useDispatch();
 
   const handleSignUp = credentials => {
-    const url = 'https://vercel-new-mocha.vercel.app/user/signup';
+    const url = 'https://xdrabbit-server.vercel.app/user/signup';
 
     axios
       .post(url, credentials)

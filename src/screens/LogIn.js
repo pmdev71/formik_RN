@@ -47,7 +47,7 @@ const LogIn = ({navigation}) => {
   console.log('User from toolkit store--->', user);
 
   const handleLogIn = credentials => {
-    const url = 'https://vercel-new-mocha.vercel.app/user/signin';
+    const url = 'https://xdrabbit-server.vercel.app/user/signin';
 
     axios
       .post(url, credentials)
